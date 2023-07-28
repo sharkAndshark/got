@@ -1,0 +1,18 @@
+name: source2
+vectro_layers:
+  - id: "telephone"
+    fields:
+      f1: "desc1"
+      f2: "desc2"
+sqls:
+  z*: |
+    SELECT  ST_AsMVT(tile, 'points3857', 4096, 'geom')  FROM (  SELECT  ST_AsMVTGeom(  ST_Transform(ST_CurveToLine("geom"), 3857),
+    ST_TileEnvelope(:z,:x,:y),
+    4096, 64, true
+    ) AS geom
+    , "gid"
+    FROM
+    "public"."points3857"
+    WHERE
+    "geom" && ST_Transform(ST_TileEnvelope(:z,:x,:y, margin => 0.015625), 4326)
+    ) AS tile;
