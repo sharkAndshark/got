@@ -1,0 +1,19 @@
+name: planet_osm_point
+description: points of planet
+schema: xyz
+minzoom: 7
+maxzoom: 14
+bounds:
+  - -180
+  - -85
+  - 180
+  - 85
+vectro_layers:
+  - id: "osm_id"
+    fields:
+      name: "text"
+      railway: "text"
+sqls:
+  z*: |
+    SELECT  ST_AsMVT(tile, 'planet_osm_point', 4096)  FROM (
+    SELECT	ST_AsMVTGeom(  "way", ST_TileEnvelope(:z,:x,:y),4096,64,true) AS geom,		"osm_id"		FROM"public"."planet_osm_point" 		WHERE "way" && ST_TileEnvelope(:z,:x,:y, margin => 0.015625)     ) AS tile;

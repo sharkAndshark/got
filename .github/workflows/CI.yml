@@ -1,0 +1,51 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: build and test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: build-${{ matrix.target }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-x64
+            ext: ""
+          - os: windows-latest
+            target: win-x64
+            ext: ".exe"
+          - os: macOS-latest
+            target: osx-x64
+            ext: ""
+          - os: macOS-latest
+            target: osx-arm64
+            ext: ""
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      - name: Build
+        run: go build -v
+      - name: Test
+        run: go test -v
+      - name: Start postgres
+        uses: nyurik/action-setup-postgis@v1
+        id: pg
+        with:
+          username: test
+          password: 123456
+          database: test
+          rights: --superuser
+      

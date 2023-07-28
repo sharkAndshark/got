@@ -1,0 +1,1 @@
+docker run  -d -p 5432:5432  -e POSTGRES_USER=postgis  -e POSTGRES_PASSWORD=postgis -e  POSTGRES_DB=spatial  postgis/postgis:latest
